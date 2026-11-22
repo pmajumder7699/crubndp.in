@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{% block title %}CRU Bank V2{% endblock %}</title><link rel="stylesheet" href="{{url_for('static',filename='style.css')}}"></head><body>
+{% if logged_user %}<aside class="sidebar"><div class="brand"><b>◈ CRU BANK</b><small>BRANCH BANKING · V2</small></div><nav>
+<a href="{{url_for('main.dashboard')}}">▦ Dashboard</a><a href="{{url_for('main.customers')}}">♙ Customers</a><a href="{{url_for('main.accounts')}}">▤ Accounts</a>
+{% if logged_user.role in ['Administrator','Branch Manager','Assistant Manager','Customer Service'] %}<a href="{{url_for('main.open_account')}}">＋ Open account</a>{% endif %}
+<a href="{{url_for('main.transactions')}}">⇄ Transactions</a>
+{% if logged_user.role in ['Administrator','Branch Manager','Assistant Manager'] %}<a href="{{url_for('main.kyc_queue')}}">✓ KYC review</a>{% endif %}
+{% if logged_user.role in ['Administrator','Branch Manager'] %}<a href="{{url_for('main.staff')}}">♧ Staff & roles</a><a href="{{url_for('main.audit_page')}}">▥ Audit log</a>{% endif %}
+{% if logged_user.role=='Administrator' %}<a href="{{url_for('main.security_settings')}}">⚙ Security settings</a>{% endif %}
+</nav><div class="side-note">Authorized staff only<br>Do not share credentials.</div></aside>{% endif %}
+<main class="{% if logged_user %}main{% else %}login-main{% endif %}">
+{% if logged_user %}<header class="top"><span>CRU BANK / <b>{% block crumb %}Workspace{% endblock %}</b></span><span class="who">{{logged_user.full_name}} · {{logged_user.role}} <form method="post" action="{{url_for('main.logout')}}" class="inline">{{csrf_token()|safe if false}}<input type="hidden" name="csrf_token" value="{{csrf_token()}}"><button class="ghost">Sign out</button></form></span></header>{% endif %}
+{% if logged_user %}<div id="idle-lock" class="lock-screen" data-minutes="{{global_lock_minutes}}"><div class="lock-card"><div class="lock-symbol">🔒</div><h2>CRU Bank workspace locked</h2><p>Re-enter your own staff password to continue.</p><form method="post" action="{{url_for('main.unlock')}}"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><label>Staff password<input type="password" name="password" required autocomplete="current-password" autofocus></label><button class="primary full" type="submit">Unlock workspace</button></form><form method="post" action="{{url_for('main.logout')}}"><input type="hidden" name="csrf_token" value="{{csrf_token()}}"><button class="ghost full" type="submit">Sign out</button></form></div></div>{% endif %}
+<section class="wrap">{% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="flash {{category}}">{{message}}</div>{% endfor %}{% endwith %}{% block content %}{% endblock %}</section></main>
+<script>
+const lock=document.getElementById('idle-lock');
+if(lock){let timer;const mins=Number(lock.dataset.minutes||5);function resetIdle(){if(lock.style.display==='flex')return;clearTimeout(timer);timer=setTimeout(()=>{lock.style.display='flex';const input=lock.querySelector('input[name=password]');if(input)input.focus()},mins*60*1000)}['mousemove','keydown','click','touchstart','scroll'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));resetIdle();}
+document.querySelectorAll('form').forEach(f=>f.addEventListener('submit',()=>{let b=f.querySelector('button[type=submit],button:not([type])');if(b){b.dataset.old=b.textContent;b.textContent='Please wait…';b.disabled=true}}));
+</script></body></html>

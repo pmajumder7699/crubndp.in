@@ -1,0 +1,13 @@
+Before production:
+- Replace development defaults and configure secret manager.
+- Implement MFA, login throttling and secure password reset.
+- Implement real idle lock overlay with password re-authentication (current admin setting stores timeout policy only; Flask session expires).
+- Add branch-level row-level authorization and tenant isolation.
+- Add DB migrations and managed PostgreSQL.
+- Add malware scanning / PDF content disarm and reconstruction.
+- Add CSRF, secure headers, CSP, HSTS, TLS, WAF and monitoring.
+- Move encrypted uploads to private object storage; implement key rotation and tested backups.
+- Add full document list/detail UX with consent and retention lifecycle.
+- Add verified, legally approved KYC integrations; format validation is not verification.
+- Implement actual ledger double-entry, reconciliation, limits, maker-checker posting and provider-approved payment integrations.
+- Independent security, privacy, legal and regulatory review before live use.
